@@ -5,7 +5,7 @@ class ScreenSizeController extends GetxController {
   late double screenHeight;
   late double screenWidth;
 
-  // Login in screen
+  // Login in screen widget size
 
   late double appTitleTop;
   late double appTitleLeft;
@@ -22,6 +22,7 @@ class ScreenSizeController extends GetxController {
   late double signInWithGithubButtonHeight;
   late double signInWithGithubButtonWidth;
 
+  // Home Page widget size
   late double profileInfoContainerTop;
   late double profileInfoContainerLeft;
   late double profileInfoContainerHeight;
@@ -32,11 +33,21 @@ class ScreenSizeController extends GetxController {
   late double listViewContainerHeight;
   late double listViewContainerWidth;
 
+  // Repo Page widget size
+  late double repoInfoContainerTop;
+  late double repoInfoContainerLeft;
+  late double repoInfoContainerHeight;
+  late double repoInfoContainerWidth;
+
+  late double repoListViewContainerTop;
+  late double repoListViewContainerLeft;
+  late double repoListViewContainerHeight;
+  late double repoListViewContainerWidth;
+
   void setSize(BuildContext context) async {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
-    // Sign In Page
     appTitleTop = screenHeight * 0.1;
     appTitleLeft = screenWidth * 0.05;
     appTitleHeight = screenHeight * 0.1;
@@ -52,8 +63,6 @@ class ScreenSizeController extends GetxController {
     signInWithGithubButtonHeight = screenHeight * 0.075;
     signInWithGithubButtonWidth = screenWidth * 0.9;
 
-    // Home page widget sizing
-
     profileInfoContainerTop = 0;
     profileInfoContainerLeft = 0;
     profileInfoContainerHeight = screenHeight * 0.15;
@@ -61,7 +70,17 @@ class ScreenSizeController extends GetxController {
 
     listViewContainerTop = screenHeight * 0.16;
     listViewContainerLeft = 0;
-    listViewContainerHeight = screenHeight * 0.65;
+    listViewContainerHeight = screenHeight;
     listViewContainerWidth = screenWidth;
+
+    repoInfoContainerTop = 0;
+    repoInfoContainerLeft = 0;
+    repoInfoContainerHeight = screenHeight * 0.18;
+    repoInfoContainerWidth = screenWidth;
+
+    repoListViewContainerTop = screenHeight * 0.192;
+    repoListViewContainerLeft = 0;
+    repoListViewContainerHeight = screenHeight;
+    repoListViewContainerWidth = screenWidth;
   }
 }

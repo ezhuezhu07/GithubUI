@@ -9,37 +9,32 @@ class AuthController extends GetxController {
   UserCredential? userCredential;
 
   Future<UserCredential> signInWithGitHub(BuildContext context) async {
+    // Authorize credentials with OAuth server
     final GitHubSignIn gitHubSignIn = GitHubSignIn(
         clientId: AppSecrets.clientId,
         clientSecret: AppSecrets.clientSecret,
         redirectUrl: AppSecrets.redirectUrl,
-        scope: 'repo,user,read:org,gist');
+        scope: AppSecrets.scopes);
 
+    // Github sign in web view
+    // After login with user name password
+    // It return back to the redirect url which we mentioned above and also return the access token [github authenticated token]
     final result = await gitHubSignIn.signIn(context);
 
+    // create GithubProvider and sign in with Cred
     final githubCredentials = GithubAuthProvider.credential(result.token!);
-    // print('Access token ${githubCredentials.accessToken}');
+    // For android and ios , firebase signin with cred is working
+    // For web FirebaseAuth.instance.signInWithPopup(provider) use this method!!
     final userCred =
         await FirebaseAuth.instance.signInWithCredential(githubCredentials);
+
+    // Storing the access token in local storage
+    // Firebase Authentication only persists the credentials of the user for itself. It does not persist their credentials of the OAuth provider.
     Get.find<LocalStorageService>()
         .userCred
         .write(userCred.user!.uid, userCred.credential!.accessToken);
     return userCred;
   }
-
-  /*Future<UserCredential> signInWithGitHub(context) async {
-    final GitHubSignIn gitHubSignIn = GitHubSignIn(
-        clientId: AppSecrets.clientId,
-        clientSecret: AppSecrets.clientSecret,
-        redirectUrl: AppSecrets.redirectUrl);
-
-    final result = await gitHubSignIn.signIn(context);
-    // Create a new provider
-    GithubAuthProvider githubProvider = GithubAuthProvider.credential();
-
-
-    return await FirebaseAuth.instance.signInWithProvider(githubProvider);
-  }*/
 
   void sigin(BuildContext context) async {
     userCredential = await signInWithGitHub(context);

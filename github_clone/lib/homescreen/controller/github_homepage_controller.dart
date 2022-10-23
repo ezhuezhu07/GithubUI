@@ -10,11 +10,8 @@ import 'package:github_clone/homescreen/model/organization_model.dart';
 import 'package:github_clone/homescreen/model/repository_model.dart';
 import 'package:github_clone/login/controller/screen_size_controller.dart';
 
-/*extension Log on Object {
-  void log() => devvtools.log(toString());
-}*/
-
 class GithubHomePageController extends GetxController {
+  // widget ids
   String githubHomePage = 'githubHomePage';
   String profileData = 'profileData';
   String indexedStack = 'indexedStack';
@@ -51,47 +48,53 @@ class GithubHomePageController extends GetxController {
   @override
   void onInit() async {
     sizeController = Get.find<ScreenSizeController>();
+    // get the access token from local storage
+    // TODO if access token expired how to validate, check with refresh token in github docs
     token = Get.find<LocalStorageService>()
         .userCred
         .read(FirebaseAuth.instance.currentUser!.uid);
-    print('Access token: $token');
+    // get the authenticated User
     authUser = getAuthenticatedUser();
+    // fetching repos
     repoList = getRepoList();
+    // fetching orgs
     orgList = getOrgList();
     super.onInit();
   }
 
   Future<AuthenticatedUserModel> getAuthenticatedUser() async {
     headers.putIfAbsent("Authorization", () => 'Bearer $token');
-    headers.putIfAbsent("Accept", () => 'application/vnd.github+json');
+    headers.putIfAbsent("Accept", () => ACCEPT);
     try {
+      // GET request for auth user
       DIO.Response getResponseStatus = (await dio.request(
         '$BASEURL${Endpoints.getUser}',
         queryParameters: queryParameters,
         options: DIO.Options(method: 'GET', headers: headers, extra: _extra),
       ));
       if (getResponseStatus.statusCode == 200) {
+        // Serialization of the response data
         return AuthenticatedUserModel.fromJson(getResponseStatus.data);
       }
-    } on DIO.DioError catch (ex) {
-      print('Failed to fetch authenticated user details ${ex.response}');
-    }
+    } on DIO.DioError catch (ex) {}
     return AuthenticatedUserModel();
   }
 
   Future<List<RepositoryModel>> getRepoList() async {
+    // to fetch all type of repos [public, private]
     queryParameters['visiblity'] = 'all';
     headers.putIfAbsent("Authorization", () => 'Bearer $token');
-    headers.putIfAbsent("Accept", () => 'application/vnd.github+json');
+    headers.putIfAbsent("Accept", () => ACCEPT);
     List<RepositoryModel> tempRepoList = [];
     try {
+      // GET request for repositories
       DIO.Response getResponseStatus = (await dio.request(
         '$BASEURL${Endpoints.getRepo}',
         queryParameters: queryParameters,
         options: DIO.Options(method: 'GET', headers: headers, extra: _extra),
       ));
       if (getResponseStatus.statusCode == 200) {
-        print('Fetching repos');
+        // Serialization of the response data
         for (var i in getResponseStatus.data) {
           tempRepoList.add(RepositoryModel.fromJson(i));
         }
@@ -99,7 +102,6 @@ class GithubHomePageController extends GetxController {
         return tempRepoList;
       }
     } on DIO.DioError catch (ex) {
-      // print('Failed to fetch repos ${ex.response} ${ex.response!.statusCode}');
       queryParameters.clear();
     }
     queryParameters.clear();
@@ -108,16 +110,17 @@ class GithubHomePageController extends GetxController {
 
   Future<List<OrganizationModel>> getOrgList() async {
     headers.putIfAbsent("Authorization", () => 'Bearer $token');
-    headers.putIfAbsent("Accept", () => 'application/vnd.github+json');
+    headers.putIfAbsent("Accept", () => ACCEPT);
     List<OrganizationModel> tempOrgList = [];
     try {
+      // GET request for Organization || we should grant the access while authorization or else organization is not get
       DIO.Response getResponseStatus = (await dio.request(
         '$BASEURL${Endpoints.getOrg}',
         queryParameters: queryParameters,
         options: DIO.Options(method: 'GET', headers: headers, extra: _extra),
       ));
       if (getResponseStatus.statusCode == 200) {
-        print('Fetching repos');
+        // Serialization of the response data
         for (var i in getResponseStatus.data) {
           tempOrgList.add(OrganizationModel.fromJson(i));
         }
@@ -125,7 +128,6 @@ class GithubHomePageController extends GetxController {
         return tempOrgList;
       }
     } on DIO.DioError catch (ex) {
-      // print('Failed to fetch repos ${ex.response} ${ex.response!.statusCode}');
       queryParameters.clear();
     }
     queryParameters.clear();
@@ -133,6 +135,7 @@ class GithubHomePageController extends GetxController {
   }
 
   onSelectedTab(int index) {
+    // based on index fetch the again from api !!
     activeIndex = index;
     switch (index) {
       case 0:

@@ -9,6 +9,7 @@ import 'package:github_clone/homescreen/model/authenticated_user_model.dart';
 import 'package:github_clone/homescreen/model/organization_model.dart';
 import 'package:github_clone/homescreen/model/repository_model.dart';
 import 'package:github_clone/login/controller/screen_size_controller.dart';
+import 'package:github_clone/reposcreen/view/repository_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
 class GitHubHomePage extends StatelessWidget {
@@ -19,16 +20,17 @@ class GitHubHomePage extends StatelessWidget {
     Get.put(GithubHomePageController());
     return GetBuilder<GithubHomePageController>(
         id: 'gitHubHomePage',
-        init: GithubHomePageController(),
         builder: (controller) {
           return Scaffold(
             appBar: _buildAppBar(),
             body: Stack(
               children: [
+                // Profile info area
                 _buildProfile(context, controller.sizeController, controller),
                 GetBuilder<GithubHomePageController>(
                     id: controller.indexedStack,
                     builder: (controller) {
+                      // based on bottom navigation bar options it will build corresponding view
                       return IndexedStack(
                         index: controller.activeIndex,
                         children: [
@@ -69,6 +71,7 @@ Widget _buildProfile(BuildContext context, ScreenSizeController sizeController,
           future: controller.authUser,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              // Showing Profile Info
               return Positioned(
                 top: sizeController.profileInfoContainerTop,
                 left: sizeController.profileInfoContainerLeft,
@@ -76,79 +79,83 @@ Widget _buildProfile(BuildContext context, ScreenSizeController sizeController,
                   height: sizeController.profileInfoContainerHeight,
                   width: sizeController.profileInfoContainerWidth,
                   color: dark,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            height: sizeController.screenHeight * 0.075,
-                            width: sizeController.screenHeight * 0.075,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: NetworkImage(FirebaseAuth
-                                    .instance.currentUser!.photoURL!),
-                                fit: BoxFit.cover,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: defaultPadding),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              height: sizeController.screenHeight * 0.075,
+                              width: sizeController.screenHeight * 0.075,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: NetworkImage(FirebaseAuth
+                                      .instance.currentUser!.photoURL!),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: defaultPadding,
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(snapshot.data!.login!,
-                                    style: titleStyle.copyWith(fontSize: 20)),
-                                SizedBox(
-                                  height: defaultPadding / 2,
-                                ),
-                                Text(snapshot.data!.name!,
-                                    style: titleStyle.copyWith(color: grey)),
-                              ],
+                            const SizedBox(
+                              width: defaultPadding,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: defaultPadding,
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.person,
-                            color: grey,
-                          ),
-                          const SizedBox(
-                            width: defaultPadding / 2,
-                          ),
-                          Text('${snapshot.data!.followers!}',
-                              style: titleStyle),
-                          const SizedBox(
-                            width: defaultPadding / 2,
-                          ),
-                          Text("followers",
-                              style: titleStyle.copyWith(
-                                  fontWeight: FontWeight.normal)),
-                          const SizedBox(
-                            width: defaultPadding / 2,
-                          ),
-                          const Text("•", style: titleStyle),
-                          const SizedBox(
-                            width: defaultPadding / 2,
-                          ),
-                          Text('${snapshot.data!.following}',
-                              style: titleStyle),
-                          const SizedBox(
-                            width: defaultPadding / 2,
-                          ),
-                          Text("following",
-                              style: titleStyle.copyWith(
-                                  fontWeight: FontWeight.normal)),
-                        ],
-                      ),
-                    ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(snapshot.data!.login!,
+                                      style: titleStyle.copyWith(fontSize: 20)),
+                                  SizedBox(
+                                    height: defaultPadding / 2,
+                                  ),
+                                  Text(snapshot.data!.name!,
+                                      style: titleStyle.copyWith(color: grey)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: defaultPadding,
+                        ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.person,
+                              color: grey,
+                            ),
+                            const SizedBox(
+                              width: defaultPadding / 2,
+                            ),
+                            Text('${snapshot.data!.followers!}',
+                                style: titleStyle),
+                            const SizedBox(
+                              width: defaultPadding / 2,
+                            ),
+                            Text("followers",
+                                style: titleStyle.copyWith(
+                                    fontWeight: FontWeight.normal)),
+                            const SizedBox(
+                              width: defaultPadding / 2,
+                            ),
+                            const Text("•", style: titleStyle),
+                            const SizedBox(
+                              width: defaultPadding / 2,
+                            ),
+                            Text('${snapshot.data!.following}',
+                                style: titleStyle),
+                            const SizedBox(
+                              width: defaultPadding / 2,
+                            ),
+                            Text("following",
+                                style: titleStyle.copyWith(
+                                    fontWeight: FontWeight.normal)),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -157,6 +164,7 @@ Widget _buildProfile(BuildContext context, ScreenSizeController sizeController,
                 child: Text('Failed to fetch User Data'),
               );
             } else {
+              // Until getting AuthUser data display shimmer animation
               return Positioned(
                 top: sizeController.profileInfoContainerTop,
                 left: sizeController.profileInfoContainerLeft,
@@ -399,7 +407,7 @@ Widget _shimmerListItem(ScreenSizeController sizeController, bool isEnabled) {
             height: sizeController.screenHeight * 0.08,
             width: sizeController.screenHeight * 0.08,
             decoration:
-            const BoxDecoration(shape: BoxShape.circle, color: white),
+                const BoxDecoration(shape: BoxShape.circle, color: white),
           ),
         ),
         const SizedBox(
@@ -446,80 +454,95 @@ Widget _shimmerListItem(ScreenSizeController sizeController, bool isEnabled) {
   );
 }
 
-Widget _repoListItem(ScreenSizeController sizeController,
-    RepositoryModel repo) {
-  return SizedBox(
-    height: sizeController.screenHeight * 0.1,
-    width: sizeController.screenWidth,
-    child: Row(
-      children: [
-        Container(
-          height: sizeController.screenHeight * 0.08,
-          width: sizeController.screenHeight * 0.08,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              image: NetworkImage(repo.owner!.avatarUrl!),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        const SizedBox(
-          width: defaultPadding * 2,
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(repo.name ?? '', style: titleStyle.copyWith(fontSize: 20)),
-              const SizedBox(
-                height: defaultPadding / 2,
+Widget _repoListItem(
+    ScreenSizeController sizeController, RepositoryModel repo) {
+  return GestureDetector(
+    onTap: () {
+      // routes binding skipped because of less screens!!
+      // Get.to , it will come back again to the previous screen in stack
+      Get.to(() => RepositoryPage(repositoryModel: repo));
+    },
+    child: Container(
+      height: sizeController.screenHeight * 0.1,
+      width: sizeController.screenWidth,
+      color: dark,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+        child: Row(
+          children: [
+            Container(
+              height: sizeController.screenHeight * 0.08,
+              width: sizeController.screenHeight * 0.08,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: NetworkImage(repo.owner!.avatarUrl!),
+                  fit: BoxFit.cover,
+                ),
               ),
-              Text(repo.description ?? '',
-                  style: titleStyle.copyWith(color: grey)),
-            ],
-          ),
+            ),
+            const SizedBox(
+              width: defaultPadding * 2,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(repo.name ?? '',
+                      style: titleStyle.copyWith(fontSize: 20)),
+                  const SizedBox(
+                    height: defaultPadding / 2,
+                  ),
+                  Text(repo.description ?? '',
+                      style: titleStyle.copyWith(color: grey)),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     ),
   );
 }
 
-Widget _orgListItem(ScreenSizeController sizeController,
-    OrganizationModel org) {
+Widget _orgListItem(
+    ScreenSizeController sizeController, OrganizationModel org) {
   return SizedBox(
     height: sizeController.screenHeight * 0.1,
     width: sizeController.screenWidth,
-    child: Row(
-      children: [
-        Container(
-          height: sizeController.screenHeight * 0.08,
-          width: sizeController.screenHeight * 0.08,
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            image: DecorationImage(
-              image: NetworkImage(org.avatarUrl!),
-              fit: BoxFit.cover,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+      child: Row(
+        children: [
+          Container(
+            height: sizeController.screenHeight * 0.08,
+            width: sizeController.screenHeight * 0.08,
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              image: DecorationImage(
+                image: NetworkImage(org.avatarUrl!),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-        const SizedBox(
-          width: defaultPadding * 2,
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(org.login!, style: titleStyle.copyWith(fontSize: 20)),
-              const SizedBox(
-                height: defaultPadding / 2,
-              ),
-              Text(org.description ?? '',
-                  style: titleStyle.copyWith(color: grey)),
-            ],
+          const SizedBox(
+            width: defaultPadding * 2,
           ),
-        ),
-      ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(org.login!, style: titleStyle.copyWith(fontSize: 20)),
+                const SizedBox(
+                  height: defaultPadding / 2,
+                ),
+                Text(org.description ?? '',
+                    style: titleStyle.copyWith(color: grey)),
+              ],
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }

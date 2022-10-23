@@ -15,6 +15,8 @@ class LocalStorageService extends GetxService {
     if (kIsWeb == false &&
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS)) {
+      // check and create the directory in device
+      // To store the key value pair of data with GetStorage
       createAppDir();
     }
     return this;
@@ -24,13 +26,12 @@ class LocalStorageService extends GetxService {
     const directoryName = 'GithubClone';
     final docDir = await getApplicationDocumentsDirectory();
     final myDir = Directory('${docDir.path}/$directoryName');
+
     if (await myDir.exists()) {
       appDirectory = myDir.path;
-      print('${myDir.path} App Dir Already present not creating');
     } else {
       final dir = await myDir.create(recursive: true);
       appDirectory = dir.path;
-      print(dir.path + ' App directory created');
     }
   }
 }

@@ -11,8 +11,10 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Creating the size controller and authController
     Get.put(ScreenSizeController());
     Get.put(AuthController());
+
     return Material(
       child: Scaffold(
         body: GetBuilder<ScreenSizeController>(
@@ -25,6 +27,7 @@ class LoginPage extends StatelessWidget {
                 color: dark,
                 child: Stack(
                   children: [
+                    // title widget
                     Positioned(
                         top: sizeController.appTitleTop,
                         left: sizeController.appTitleLeft,
@@ -43,6 +46,7 @@ class LoginPage extends StatelessWidget {
                                 textAlign: TextAlign.center,
                               ),
                             )))),
+                    // lottie github animation
                     Positioned(
                       top: sizeController.loginLottieAnimationTop,
                       left: sizeController.loginLottieAnimationLeft,
@@ -53,6 +57,7 @@ class LoginPage extends StatelessWidget {
                             child: Lottie.asset('assets/github-icon.json')),
                       ),
                     ),
+                    // github sign in button
                     Positioned(
                       top: sizeController.signInWithGithubButtonTop,
                       left: sizeController.signInWithGithubButtonLeft,
@@ -88,6 +93,7 @@ class LoginPage extends StatelessWidget {
                                 return null; // Defer to the widget's default.
                               })),
                           onPressed: () {
+                            // calling the sigin in method
                             Get.find<AuthController>().sigin(context);
                           },
                           label: const FittedBox(

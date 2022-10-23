@@ -19,7 +19,7 @@ void main() async {
 }
 
 Future<void> initStorageServices() async {
-  print('Initialized storage services');
+  // Initialized storage services
   await GetStorage.init('UserCred');
 }
 
@@ -32,6 +32,7 @@ class App extends StatelessWidget {
     return GetMaterialApp(
       title: 'Github',
       debugShowCheckedModeBanner: false,
+      // theme added !! Inspired from public github repo
       theme: ThemeData(
         primaryColor: primary,
         backgroundColor: dark,
@@ -49,6 +50,8 @@ class App extends StatelessWidget {
             ),
             headline6: TextStyle(fontWeight: FontWeight.w600)),
       ),
+      // For persisting the user session, Checking firebase authStateChanges
+      // If it returns the user data , push it to the HomePage
       home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, userSnapShotData) {
